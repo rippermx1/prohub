@@ -19,4 +19,11 @@
    ```bash
    pnpm test
    ```
+5. Build the project for production
+   ```bash
+   pnpm build
+   ```
+
+This project omits Angular Universal server-side rendering, so the production
+build only generates static client files.
 
