@@ -1,0 +1,4 @@
+<input type="file" accept="image/*,application/pdf" (change)="onSelect($event)">
+    <button [disabled]="loading()" (click)="start()">Verificar documento</button>
+    <p *ngIf="done()">✅ Verificado</p>
+    <p *ngIf="error()">❌ {{ error() }}</p>
