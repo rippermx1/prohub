@@ -43,6 +43,9 @@ Thumbs.db
 .vercel
 
 # Angular environments
+# Copy `src/environments/environment.sample.ts` to `src/environments/environment.ts`
+# and populate it with your local credentials.
 src/environments/environment*.ts
 !src/environments/environment.prod.ts
 !src/environments/environment.sample.ts
+
