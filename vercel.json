@@ -1,5 +1,5 @@
 {
-  "buildCommand": "pnpm run build",
+  "buildCommand": "pnpm run build:production",
   "outputDirectory": "dist/prohub/browser",
   "framework": "angular"
 }
