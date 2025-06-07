@@ -113,9 +113,13 @@ export class SpecialistDetailComponent implements OnInit {
   }
 
   contactSpecialist(): void {
-    // In a real app, this would initiate a chat or message function
     console.log('Contact specialist:', this.professional.display_name);
-    // For demo purposes, we'll just close the modal
+    if (this.professional.phone) {
+      window.open(
+        `https://api.whatsapp.com/send?phone=${this.professional.phone}&text=Hola%20${this.professional.display_name},%20me%20gustaría%20contactarte%20para%20consultar%20sobre%20tus%20servicios.`,
+        '_blank'
+      );
+    }
     this.closeModal();
   }
 }
