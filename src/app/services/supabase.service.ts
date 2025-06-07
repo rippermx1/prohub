@@ -7,8 +7,8 @@ import { environment } from '../../environments/environment';
 })
 export class SupabaseService {
   public supabase: SupabaseClient = createClient(
-    environment.supabaseUrl,
-    environment.supabaseAnonKey,
+    environment.supabaseUrl!,
+    environment.supabaseAnonKey!,
     { auth: { persistSession: true } }
   );
 
