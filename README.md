@@ -6,10 +6,10 @@
    ```bash
    pnpm install
    ```
-2. Copy the sample environment file and provide your Supabase credentials
+2. Copy `.env.sample` to `.env` and provide your Supabase credentials
    ```bash
-   cp src/environments/environment.sample.ts src/environments/environment.ts
-   # edit src/environments/environment.ts
+   cp .env.sample .env
+   # edit .env with your NG_APP_SUPABASE_URL and NG_APP_SUPABASE_ANON_KEY
    ```
 3. Run the development server
    ```bash
