@@ -4,7 +4,10 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
-    "types": []
+    "types": [],
+    "target": "es2020",
+    "module": "es2020",
+    "bundler": "experimental"
   },
   "files": [
     "src/main.ts"

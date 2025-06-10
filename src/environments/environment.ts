@@ -3,6 +3,6 @@
 // the Angular CLI.
 export const environment = {
   production: false,
-  supabaseUrl: process.env['NG_APP_SUPABASE_URL'],
-  supabaseAnonKey: process.env['NG_APP_SUPABASE_ANON_KEY'],
+  supabaseUrl: import.meta.env['NG_APP_SUPABASE_URL'] ?? '',
+  supabaseAnonKey: import.meta.env['NG_APP_SUPABASE_ANON_KEY'] ?? '',
 };
