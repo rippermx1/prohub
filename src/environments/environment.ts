@@ -1,11 +1,8 @@
-/* Development environment configuration
- *
- * Replace the placeholder values with your actual Supabase credentials.
- * These values are embedded at build time and used by the application
- * directly in the browser, so do not commit real secrets to your repo.
- */
+// The default development environment also reads from `process.env` so that the
+// same variables used in production builds are available locally when running
+// the Angular CLI.
 export const environment = {
   production: false,
-  supabaseUrl: '<YOUR_SUPABASE_URL>',
-  supabaseAnonKey: '<YOUR_SUPABASE_ANON_KEY>',
+  supabaseUrl: process.env['NG_APP_SUPABASE_URL'],
+  supabaseAnonKey: process.env['NG_APP_SUPABASE_ANON_KEY'],
 };

@@ -1,12 +1,8 @@
-/* Production environment configuration
- *
- * At build time you should replace the placeholder values below with your
- * actual Supabase project credentials. These values are included in the
- * final client bundle, so ensure secrets are not committed to source
- * control.
- */
+// The Angular CLI replaces environment variables at build time. Using
+// `process.env` ensures the values are inlined when deploying to Vercel or
+// other environments that provide build-time variables.
 export const environment = {
   production: true,
-  supabaseUrl: '<YOUR_SUPABASE_URL>',
-  supabaseAnonKey: '<YOUR_SUPABASE_ANON_KEY>',
+  supabaseUrl: process.env['NG_APP_SUPABASE_URL'],
+  supabaseAnonKey: process.env['NG_APP_SUPABASE_ANON_KEY'],
 };
