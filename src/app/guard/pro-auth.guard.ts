@@ -37,7 +37,6 @@ export const proAuthGuard: CanActivateFn = async (route, state) => {
 function isProfileComplete(p: any): boolean {
   return (
     !!p.display_name &&
-    !!p.hourly_rate &&
     Array.isArray(p.specialties) &&
     p.specialties.length > 0
   );
