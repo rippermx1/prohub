@@ -1,6 +1,16 @@
 {
   "buildCommand": "pnpm run build",
   "outputDirectory": "dist/prohub/browser",
-  
-  "framework": "angular"
+  "framework": "angular",
+  "routes": [
+    
+    { "src": "/ngsw-worker.js", "dest": "/ngsw-worker.js", "continue": true },
+    { "src": "/ngsw.json",      "dest": "/ngsw.json",      "continue": true },
+    { "src": "/manifest.webmanifest", "dest": "/manifest.webmanifest", "continue": true },
+
+    { "handle": "filesystem" },
+
+    
+    { "src": "/.*", "dest": "/index.html" }
+  ]
 }
