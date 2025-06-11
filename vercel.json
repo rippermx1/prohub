@@ -13,7 +13,7 @@
     }
   ],
   "env": {
-    "NG_APP_SUPABASE_URL": "@ng_app_supabase_url",
-    "NG_APP_SUPABASE_ANON_KEY": "@ng_app_supabase_anon_key"
+    "NG_APP_SUPABASE_URL": "https://oecotiuceyuugdvbujjl.supabase.co",
+    "NG_APP_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9lY290aXVjZXl1dWdkdmJ1ampsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc3ODY3ODcsImV4cCI6MjA2MzM2Mjc4N30.pjWa8XqDwSz123WBDd_W0VzfPKGxrMR5tVTBnjYJkCk"
   }
 }
