@@ -28,7 +28,6 @@ export const routes: Routes = [
   {
     path: 'onboarding',
     loadComponent: () => import('./pages/onboarding-wizard/onboarding-wizard.component').then((m) => m.OnboardingWizardComponent),
-    canActivate: [proAuthGuard]
   },
   {
     path: 'login',
