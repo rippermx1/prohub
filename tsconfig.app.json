@@ -3,10 +3,12 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "./out-tsc/app",
-    "types": [],
+    "outDir": "./dist/out-tsc",
     "target": "ES2022",
-    "module": "ES2022"
+    "module": "ES2022",
+    "types": [
+      "node"
+    ] // Add Node types for process.env support
   },
   "angularCompilerOptions": {
     "bundler": "experimental"

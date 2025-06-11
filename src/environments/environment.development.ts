@@ -1,6 +1,5 @@
-// For Vercel deployment, use process.env directly for runtime access to environment variables
 export const environment = {
-  production: true,
+  production: false,
   supabaseUrl: process.env['NG_APP_SUPABASE_URL'] || import.meta.env.NG_APP_SUPABASE_URL || '',
   supabaseAnonKey: process.env['NG_APP_SUPABASE_ANON_KEY'] || import.meta.env.NG_APP_SUPABASE_ANON_KEY || '',
 };

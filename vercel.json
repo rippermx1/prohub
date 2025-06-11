@@ -1,5 +1,19 @@
 {
   "buildCommand": "pnpm run build:production",
   "outputDirectory": "dist/prohub/browser",
-  "framework": "angular"
+  "framework": "angular",
+  "routes": [
+    {
+      "src": "/(assets|images|fonts|favicon.ico)/(.*)",
+      "dest": "/assets/$2"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
+  "env": {
+    "NG_APP_SUPABASE_URL": "@ng_app_supabase_url",
+    "NG_APP_SUPABASE_ANON_KEY": "@ng_app_supabase_anon_key"
+  }
 }

@@ -3,11 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --host 0.0.0.0 --port 4201 --disable-host-check",
-    "start:local": "ng serve --configuration local --host 0.0.0.0 --port 4201 --disable-host-check",
+    "start": "ng serve",
     "build": "ng build",
-    "build:local": "ng build --configuration local",
-    "build:production": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
@@ -28,10 +25,10 @@
     "zone.js": "~0.14.10"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^18.2.19",
+    "@angular-devkit/build-angular": "^18.0.0",
     "@angular-devkit/core": "18",
     "@angular-devkit/schematics-cli": "18",
-    "@angular/cli": "^18.2.19",
+    "@angular/cli": "^18.0.0",
     "@angular/compiler-cli": "^18.2.0",
     "@types/jasmine": "~5.1.0",
     "@types/node": "^20.17.47",
