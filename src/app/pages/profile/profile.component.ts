@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { SupabaseService } from '../../services/supabase.service';
 import { FormsModule } from '@angular/forms';
@@ -22,7 +22,7 @@ interface Service {
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })
-export class ProfileComponent {
+export class ProfileComponent implements OnInit {
   sb = inject(SupabaseService);
   router = inject(Router);
   uid: string | undefined;
@@ -44,41 +44,41 @@ export class ProfileComponent {
   services: Service[] = [];
   newService: Service = { name: '', price: 0 };
 
-  constructor(){
-    effect(async ()=>{
-      const user = (await this.sb.supabase.auth.getUser()).data.user;
-      if(!user){ this.router.navigate(['/login']); return; }
-      this.uid = user.id;
-      const { data } = await this.sb.supabase.from('profiles').select('*').eq('id',user.id).single();
-      if(data){
-        this.displayName = data.display_name ?? '';
-        this.bio = data.bio ?? '';
-        this.city = data.city ?? '';
-        this.rut = data.rut ?? ''; // Load RUT from profile
-        this.phone = data.phone ?? ''; // Load phone from profile
-        this.avatarUrl = data.avatar_url;
-        this.hourlyRate = data.hourly_rate;
-        
-        // Extract first specialty from array or use empty string
-        if (Array.isArray(data.specialties) && data.specialties.length > 0) {
-          this.selectedSpecialty = data.specialties[0];
-        } else if (typeof data.specialties === 'string') {
-          this.selectedSpecialty = data.specialties;
-        } else {
-          this.selectedSpecialty = '';
-        }
-      }
+  constructor(){}
+
+  async ngOnInit() {
+    const user = (await this.sb.supabase.auth.getUser()).data.user;
+    if(!user){ this.router.navigate(['/login']); return; }
+    this.uid = user.id;
+    const { data } = await this.sb.supabase.from('profiles').select('*').eq('id',user.id).single();
+    if(data){
+      this.displayName = data.display_name ?? '';
+      this.bio = data.bio ?? '';
+      this.city = data.city ?? '';
+      this.rut = data.rut ?? ''; // Load RUT from profile
+      this.phone = data.phone ?? ''; // Load phone from profile
+      this.avatarUrl = data.avatar_url;
+      this.hourlyRate = data.hourly_rate;
       
-      // Fetch services
-      const { data: servicesData } = await this.sb.supabase
-        .from('services')
-        .select('*')
-        .eq('pro_id', user.id);
-      
-      if (servicesData && servicesData.length > 0) {
-        this.services = servicesData;
+      // Extract first specialty from array or use empty string
+      if (Array.isArray(data.specialties) && data.specialties.length > 0) {
+        this.selectedSpecialty = data.specialties[0];
+      } else if (typeof data.specialties === 'string') {
+        this.selectedSpecialty = data.specialties;
+      } else {
+        this.selectedSpecialty = '';
       }
-    });
+    }
+    
+    // Fetch services
+    const { data: servicesData } = await this.sb.supabase
+      .from('services')
+      .select('*')
+      .eq('pro_id', user.id);
+    
+    if (servicesData && servicesData.length > 0) {
+      this.services = servicesData;
+    }
   }
 
   onFile(e:Event){ const i=e.target as HTMLInputElement; if(i.files?.length){this.file=i.files[0]; this.previewUrl=URL.createObjectURL(this.file);} }

@@ -1,6 +1,3 @@
-// The default development environment also reads from `process.env` so that the
-// same variables used in production builds are available locally when running
-// the Angular CLI.
 export const environment = {
   production: true,
   supabaseUrl: "https://oecotiuceyuugdvbujjl.supabase.co",

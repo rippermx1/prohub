@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { SupabaseService } from '../../services/supabase.service';
 
 @Component({
@@ -9,22 +9,22 @@ import { SupabaseService } from '../../services/supabase.service';
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
   leads = signal<number>(0);
   rating = signal<number>(0);
   sb = inject(SupabaseService);
 
-  constructor() {
-    effect(async () => {
-      const { data: { session } } = await this.sb.getSession();
-      if (!session) return;
-      const uid = session.user.id;
-      const metric = await this.sb.getMetrics(uid);
-      // Add a type assertion for metric.data
-      const data = metric.data as { leads_total?: number; rating_avg?: number } | null;
-      this.leads.set(data?.leads_total ?? 0);
-      this.rating.set(data?.rating_avg ?? 0);
-    });
+  constructor() {}
+  
+  async ngOnInit() {
+    const { data: { session } } = await this.sb.getSession();
+    if (!session) return;
+    const uid = session.user.id;
+    const metric = await this.sb.getMetrics(uid);
+    // Add a type assertion for metric.data
+    const data = metric.data as { leads_total?: number; rating_avg?: number } | null;
+    this.leads.set(data?.leads_total ?? 0);
+    this.rating.set(data?.rating_avg ?? 0);
   }
   
   /**
