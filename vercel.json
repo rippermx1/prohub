@@ -1,5 +1,12 @@
 {
   "buildCommand": "pnpm run build",
   "outputDirectory": "dist/prohub/browser",
-  "framework": "angular"
+  "framework": "angular",
+  "routes": [
+    { "src": "/(assets|images|fonts|favicon\\.ico)/(.*)", "dest": "/assets/$2" },
+    {
+      "src": "/((?!.*\\.(js|css|png|jpg|jpeg|webp|svg|gif|ico|json|webmanifest|woff2?|ttf)).*)",
+      "dest": "/index.html"
+    }
+  ]
 }
