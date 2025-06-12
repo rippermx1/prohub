@@ -22,5 +22,7 @@ export const authGuard: CanActivateFn = (route, state) => {
 };
 
 export const publicOnlyGuard: CanActivateFn = (route, state) => {
+  // Always allow access to public routes, regardless of authentication
+  console.log('Public route guard executed, allowing access');
   return true;
 };
