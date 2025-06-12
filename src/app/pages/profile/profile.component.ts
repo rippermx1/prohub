@@ -3,6 +3,9 @@ import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { SupabaseService } from '../../services/supabase.service';
 import { FormsModule } from '@angular/forms';
+import { SpecialtiesService } from '../../services/specialties.service';
+import { AuthService } from '../../services/auth.service';
+import { LogoutButtonComponent } from '../../components/logout-button/logout-button.component';
 
 interface Service {
   id?: string;
@@ -17,7 +20,8 @@ interface Service {
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule
+    FormsModule,
+    LogoutButtonComponent
   ],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
@@ -25,6 +29,8 @@ interface Service {
 export class ProfileComponent implements OnInit {
   sb = inject(SupabaseService);
   router = inject(Router);
+  specialtiesService = inject(SpecialtiesService);
+  authService = inject(AuthService);
   uid: string | undefined;
   displayName = '';
   bio = '';
@@ -37,16 +43,18 @@ export class ProfileComponent implements OnInit {
   saving = false;
   saved = false;
 
-  allSpecialties = ['Contabilidad','Legal','Marketing','Diseño','TI','Salud'];
+  allSpecialties: string[] = [];
   selectedSpecialty: string = ''; // Changed from array to single string
   
   hourlyRate: number | null = null;
   services: Service[] = [];
   newService: Service = { name: '', price: 0 };
-
   constructor(){}
 
   async ngOnInit() {
+    // Load specialties from service
+    this.allSpecialties = this.specialtiesService.getAll();
+    
     const user = (await this.sb.supabase.auth.getUser()).data.user;
     if(!user){ this.router.navigate(['/login']); return; }
     this.uid = user.id;
@@ -197,6 +205,11 @@ export class ProfileComponent implements OnInit {
   editService(index: number) {
     // Set editing mode for this service
     this.services[index].editing = true;
+  }
+  
+  // Logout method
+  logout(): void {
+    this.authService.signOut();
   }
   
   // Add method to save edits

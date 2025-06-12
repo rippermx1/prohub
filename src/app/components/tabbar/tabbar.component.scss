@@ -1,0 +1,53 @@
+:host {
+  display: block;
+}
+
+nav {
+  transition: transform 0.3s ease-in-out;
+}
+
+button {
+  position: relative;
+  transition: all 0.2s ease-in-out;
+  
+  // Active indicator
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%) scale(0);
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: currentColor;
+    opacity: 0;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+  
+  // Active state
+  &.text-indigo-600:after,
+  &.dark\\:text-indigo-400:after {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+  }
+  
+  // Hover effect
+  &:hover {
+    transform: translateY(-2px);
+  }
+  
+  // Click effect
+  &:active {
+    transform: translateY(0) scale(0.95);
+  }
+  
+  // Icon animation
+  svg {
+    transition: transform 0.2s ease;
+  }
+  
+  &:hover svg {
+    transform: scale(1.1);
+  }
+}

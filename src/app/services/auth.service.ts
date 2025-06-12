@@ -1,6 +1,15 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { SupabaseService } from './supabase.service';
 import { Router } from '@angular/router';
+import { BehaviorSubject, Observable, distinctUntilChanged, map } from 'rxjs';
+
+export enum UserState {
+  Initializing = 'initializing',
+  SignedOut = 'signed-out',
+  SignedIn = 'signed-in',
+  NewUser = 'new-user',
+  IncompleteProfile = 'incomplete-profile'
+}
 
 @Injectable({
   providedIn: 'root',
@@ -9,13 +18,23 @@ export class AuthService {
   sb = inject(SupabaseService);
   router = inject(Router);
   
-  // Use a reactive signal for the session state
-  session = signal<any>(null);
-  // Add a loading state to track authentication status
-  isLoading = signal<boolean>(true);
-  // Add a user signal to easily access the current user
-  currentUser = signal<any>(null);
-
+  // Observable streams for authentication state
+  private sessionSubject = new BehaviorSubject<any>(null);
+  private loadingSubject = new BehaviorSubject<boolean>(true);
+  private currentUserSubject = new BehaviorSubject<any>(null);
+  private userStateSubject = new BehaviorSubject<UserState>(UserState.Initializing);
+  
+  // Public observables
+  readonly session$ = this.sessionSubject.asObservable();
+  readonly isLoading$ = this.loadingSubject.asObservable();
+  readonly currentUser$ = this.currentUserSubject.asObservable();
+  readonly userState$ = this.userStateSubject.asObservable();
+  
+  // Derived observables
+  readonly isAuthenticated$ = this.session$.pipe(
+    map(session => !!session),
+    distinctUntilChanged()
+  );
   constructor() {
     // Initialize session from stored value
     this.initSession();
@@ -29,71 +48,99 @@ export class AuthService {
   private async initSession() {
     try {
       const { data } = await this.sb.supabase.auth.getSession();
-      this.session.set(data.session);
-      this.currentUser.set(data.session?.user || null);
+      this.sessionSubject.next(data.session);
+      this.currentUserSubject.next(data.session?.user || null);
+      
+      if (data.session) {
+        this.checkUserProfile(data.session.user.id);
+      } else {
+        this.userStateSubject.next(UserState.SignedOut);
+      }
     } catch (error) {
       console.error('Error initializing session:', error);
+      this.userStateSubject.next(UserState.SignedOut);
     } finally {
-      this.isLoading.set(false);
+      this.loadingSubject.next(false);
     }
   }
 
-  private async handleAuthChange(event: string, session: any) {
-    this.session.set(session);
-    this.currentUser.set(session?.user || null);
-    
-    // Only handle specific auth events to prevent excessive firing
-    if ((event === 'SIGNED_IN') && session?.user?.id) {
-      // Skip redirection logic if we're on the home page
-      if (this.router.url === '/') {
+  private async checkUserProfile(userId: string): Promise<void> {
+    try {
+      const { data, error } = await this.sb.checkUserExists(userId);
+      
+      if (error) {
+        console.error('Error checking user profile:', error);
+        this.userStateSubject.next(UserState.IncompleteProfile);
         return;
       }
       
-      try {
-        const { data, error } = await this.sb.checkUserExists(session.user.id);
-        
-        if (error) {
-          console.error('Error checking user profile:', error);
-          if (this.router.url !== '/onboarding') {
-            this.router.navigate(['/onboarding']);
-          }
-          return;
-        }
-        
-        if (data) {
-          // User exists and has a profile, check if profile is complete
-          const isComplete = this.isProfileComplete(data);
-          if (isComplete) {
-            // Profile is complete, go to dashboard if not already there
-            if (this.router.url !== '/dashboard') {
-              this.router.navigate(['/dashboard']);
-            }
-          } else {
-            // Profile exists but is incomplete, go to onboarding if not already there
-            if (this.router.url !== '/onboarding') {
-              this.router.navigate(['/onboarding']);
-            }
-          }
+      if (data) {
+        // User exists and has a profile, check if profile is complete
+        const isComplete = this.isProfileComplete(data);
+        if (isComplete) {
+          this.userStateSubject.next(UserState.SignedIn);
         } else {
-          // New user, go to onboarding if not already there
-          if (this.router.url !== '/onboarding') {
-            this.router.navigate(['/onboarding']);
-          }
+          this.userStateSubject.next(UserState.IncompleteProfile);
         }
-      } catch (error) {
-        console.error('Error during auth redirect:', error);
-        if (this.router.url !== '/onboarding') {
-          this.router.navigate(['/onboarding']);
-        }
+      } else {
+        // New user
+        this.userStateSubject.next(UserState.NewUser);
       }
+    } catch (error) {
+      console.error('Error checking user profile:', error);
+      this.userStateSubject.next(UserState.IncompleteProfile);
+    }
+  }
+  private async handleAuthChange(event: string, session: any) {
+    // Update session and user subjects
+    this.sessionSubject.next(session);
+    this.currentUserSubject.next(session?.user || null);
+    
+    // Handle auth events
+    if (event === 'SIGNED_IN' && session?.user?.id) {
+      await this.checkUserProfile(session.user.id);
+      this.handleRedirectBasedOnState();
     } else if (event === 'SIGNED_OUT') {
-      // Navigate to login when signed out, but only if not already on login or home page
-      if (this.router.url !== '/login' && this.router.url !== '/') {
-        this.router.navigate(['/login']);
-      }
+      this.userStateSubject.next(UserState.SignedOut);
+      this.handleSignOutRedirect();
     }
   }
 
+  private handleRedirectBasedOnState() {
+    // Get current state
+    const currentState = this.userStateSubject.getValue();
+    const currentUrl = this.router.url;
+    
+    // Skip redirection if we're on the home page
+    if (currentUrl === '/') {
+      return;
+    }
+    
+    switch (currentState) {
+      case UserState.NewUser:
+      case UserState.IncompleteProfile:
+        // Redirect to onboarding if not already there
+        if (currentUrl !== '/onboarding') {
+          this.router.navigate(['/onboarding']);
+        }
+        break;
+      case UserState.SignedIn:
+        // Redirect to dashboard if not already there
+        if (currentUrl !== '/dashboard' && 
+            currentUrl !== '/profile' && 
+            !currentUrl.startsWith('/search')) {
+          this.router.navigate(['/dashboard']);
+        }
+        break;
+    }
+  }
+  
+  private handleSignOutRedirect() {
+    // Navigate to login when signed out, but only if not already on login or home page
+    if (this.router.url !== '/login' && this.router.url !== '/') {
+      this.router.navigate(['/login']);
+    }
+  }
   // Helper to check if a profile is complete
   private isProfileComplete(profile: any): boolean {
     return !!(
@@ -108,7 +155,7 @@ export class AuthService {
     return this.sb.supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}`, // Change to root, we'll handle redirection in the auth state change
+        redirectTo: `${window.location.origin}`,
       },
     });
   }
@@ -123,8 +170,9 @@ export class AuthService {
       const { error } = await this.sb.supabase.auth.signOut();
       if (error) throw error;
       // Clear local state
-      this.session.set(null);
-      this.currentUser.set(null);
+      this.sessionSubject.next(null);
+      this.currentUserSubject.next(null);
+      this.userStateSubject.next(UserState.SignedOut);
     } catch (error) {
       console.error('Error signing out:', error);
       throw error;
@@ -133,6 +181,11 @@ export class AuthService {
   
   // Helper method to check if user is authenticated
   isAuthenticated(): boolean {
-    return !!this.session();
+    return !!this.sessionSubject.getValue();
+  }
+  
+  // Helper method to get current session - for backward compatibility
+  session(): any {
+    return this.sessionSubject.getValue();
   }
 }

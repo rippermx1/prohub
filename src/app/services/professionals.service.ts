@@ -1,6 +1,7 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { SupabaseService } from './supabase.service';
 import { Professional, ProfessionalFilters } from '../interfaces/professional.interface';
+import { SpecialtiesService } from './specialties.service';
 
 export interface ServicePrice {
   name: string;
@@ -13,6 +14,7 @@ export interface ServicePrice {
 })
 export class ProfessionalsService {
   sb = inject(SupabaseService);
+  specialtiesService = inject(SpecialtiesService);
   results = signal<Professional[] | null>(null);
   loading = signal(false);
   error = signal<string | null>(null);

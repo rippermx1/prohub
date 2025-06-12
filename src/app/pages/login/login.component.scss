@@ -1,0 +1,22 @@
+.logo-container {
+  img {
+    transition: transform 0.5s ease, filter 0.5s ease;
+    filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.5));
+    
+    &:hover {
+      transform: scale(1.05) rotate(2deg);
+      filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.7));
+    }
+  }
+}
+
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  
+  &:active {
+    transform: scale(0.98);
+  }
+}
