@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FilterResult } from '../../interfaces/filter-result.interface';
+import { SpecialtiesService } from '../../services/specialties.service';
 
 interface ExperienceLevel {
   id: string;
@@ -24,28 +25,8 @@ export class FilterSheetComponent {
   @Input() open = false;
   @Output() closed = new EventEmitter<FilterResult | null>();
 
-  specialties: string[] = [
-    'Contabilidad',
-    'Legal',
-    'Marketing',
-    'Diseño',
-    'TI',
-    'Salud',
-    'Educación',
-    'Finanzas',
-    'Recursos Humanos',
-    'Consultoría',
-    'Arquitectura',
-    'Ingeniería',
-    'Inmobiliaria',
-    'Psicología',
-    'Coaching',
-    'Fotografía',
-    'Video',
-    'Traducción',
-    'Redacción',
-    'E-commerce'
-  ];
+  specialtiesService = inject(SpecialtiesService);
+  specialties: string[] = [];
   
   experienceLevels: ExperienceLevel[] = [
     { id: 'junior', label: '< 2 años', min: 0, max: 2 },
@@ -58,6 +39,11 @@ export class FilterSheetComponent {
   private selectedExperience: ExperienceLevel | null = null;
   cityFilter = '';
   animateIn = true;
+
+  constructor() {
+    // Load specialties from service
+    this.specialties = this.specialtiesService.getAll();
+  }
 
   toggle(option: string) {
     this.selected.has(option)

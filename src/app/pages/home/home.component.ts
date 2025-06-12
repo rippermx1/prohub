@@ -8,6 +8,8 @@ import { FilterSheetComponent } from '../../components/filter-sheet/filter-sheet
 import { FilterResult } from '../../interfaces/filter-result.interface';
 import { Professional } from '../../interfaces/professional.interface';
 import { ProfessionalsService } from '../../services/professionals.service';
+import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -24,15 +26,29 @@ import { ProfessionalsService } from '../../services/professionals.service';
 })
 export class HomeComponent implements OnInit {
   professionalService = inject(ProfessionalsService);
+  authService = inject(AuthService);
+  router = inject(Router);
+  
   private pros = signal<Professional[]>([]);
   sheetOpen = false;
   loading = signal<boolean>(true);
   private activeFilters = signal<FilterResult | null>(null);
-
+  isProfessional = signal<boolean>(false);
+  
   constructor() {}
-
+  
   ngOnInit(): void {
     this.fetchProfessionals();
+    this.checkUserStatus();
+  }
+
+  private async checkUserStatus(): Promise<void> {
+    // Only check if session exists to determine if user is a professional
+    this.isProfessional.set(this.authService.isAuthenticated());
+  }
+
+  navigateToProfile(): void {
+    this.router.navigate(['/profile']);
   }
 
   async fetchProfessionals(): Promise<void> {
@@ -84,7 +100,7 @@ export class HomeComponent implements OnInit {
     let yearsOfExperience = 0;
     
     if (professional.experience) {
-      const match = professional.experience.match(/\d+/);
+      const match = professional.experience.match(/\\d+/);
       if (match) {
         yearsOfExperience = parseInt(match[0], 10);
       }

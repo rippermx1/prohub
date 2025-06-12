@@ -3,6 +3,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { SupabaseService } from '../../services/supabase.service';
 import { FormsModule } from '@angular/forms';
+import { SpecialtiesService } from '../../services/specialties.service';
 
 interface Service {
   id?: string;
@@ -25,6 +26,7 @@ interface Service {
 export class ProfileComponent implements OnInit {
   sb = inject(SupabaseService);
   router = inject(Router);
+  specialtiesService = inject(SpecialtiesService);
   uid: string | undefined;
   displayName = '';
   bio = '';
@@ -37,16 +39,18 @@ export class ProfileComponent implements OnInit {
   saving = false;
   saved = false;
 
-  allSpecialties = ['Contabilidad','Legal','Marketing','Diseño','TI','Salud'];
+  allSpecialties: string[] = [];
   selectedSpecialty: string = ''; // Changed from array to single string
   
   hourlyRate: number | null = null;
   services: Service[] = [];
   newService: Service = { name: '', price: 0 };
-
   constructor(){}
 
   async ngOnInit() {
+    // Load specialties from service
+    this.allSpecialties = this.specialtiesService.getAll();
+    
     const user = (await this.sb.supabase.auth.getUser()).data.user;
     if(!user){ this.router.navigate(['/login']); return; }
     this.uid = user.id;

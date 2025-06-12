@@ -1,6 +1,20 @@
 <!-- Fixed filter tab at top -->
 <div class="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 py-3 flex items-center justify-between">
-  <h1 class="text-lg font-semibold text-gray-900 dark:text-white">Profesionales</h1>
+  <div class="flex items-center gap-2">
+    <!-- Show either profile button or title -->
+    <button *ngIf="isProfessional()" 
+            (click)="navigateToProfile()" 
+            title="Ir a mi perfil"
+            class="flex items-center justify-center w-10 h-10 rounded-full bg-indigo-600 text-white hover:bg-indigo-700 transition-colors shadow-md">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+        <circle cx="12" cy="7" r="4"></circle>
+      </svg>
+    </button>
+    
+    <h1 *ngIf="!isProfessional()" class="text-lg font-semibold text-gray-900 dark:text-white">Profesionales</h1>
+  </div>
+  
   <button 
     (click)="sheetOpen = true" 
     class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm"
