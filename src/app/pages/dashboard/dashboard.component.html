@@ -1,10 +1,15 @@
 <section class="p-4 lg:p-6 space-y-6">
-  <!-- Dashboard Header -->
-  <div class="flex items-center justify-between">
+  <!-- Dashboard Header -->  <div class="flex items-center justify-between">
     <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Panel profesional</h1>
-    <span class="px-3 py-1.5 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 text-sm font-medium rounded-full">
-      <span class="hidden sm:inline">Profesional</span> Verificado
-    </span>
+    <div class="flex items-center gap-3">      <span class="px-3 py-1.5 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 text-sm font-medium rounded-full">
+        <span class="hidden sm:inline">Profesional</span> Verificado      </span>
+      <!-- Enhanced Logout Button Component -->
+      <app-logout-button 
+        variant="icon" 
+        customClass="hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400"
+        confirmMessage="¿Estás seguro que deseas cerrar sesión de ProHub?"
+      ></app-logout-button>
+    </div>
   </div>
 
   <!-- Key Metrics - Simplified -->

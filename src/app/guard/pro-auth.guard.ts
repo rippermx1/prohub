@@ -1,43 +1,41 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { SupabaseService } from '../services/supabase.service';
+import { AuthService, UserState } from '../services/auth.service';
+import { firstValueFrom } from 'rxjs';
 
 export const proAuthGuard: CanActivateFn = async (route, state) => {
-  const sb = inject(SupabaseService);
+  const authService = inject(AuthService);
   const router = inject(Router);
-  const {
-    data: { session },
-  } = await sb.getSession();
-  if (!session) {
+  
+  // First, check if we're authenticated at all
+  const isAuthenticated = await firstValueFrom(authService.isAuthenticated$);
+  if (!isAuthenticated) {
     router.navigate(['/login']);
     return false;
   }
-
-  const { data: profile, error } = await sb.getProfile(session.user.id);
-  if (error) {
-    router.navigate(['/login']);
-    return false;
+  
+  // Then, check user state
+  const userState = await firstValueFrom(authService.userState$);
+  
+  switch (userState) {
+    case UserState.SignedIn:
+      // User is properly authenticated and has a complete profile
+      return true;
+      
+    case UserState.IncompleteProfile:
+    case UserState.NewUser:
+      // Redirect to onboarding to complete profile
+      router.navigate(['/onboarding']);
+      return false;
+      
+    case UserState.SignedOut:
+      // Redirect to login
+      router.navigate(['/login']);
+      return false;
+      
+    default:
+      // For any other state (including Initializing), redirect to login for safety
+      router.navigate(['/login']);
+      return false;
   }
-
-  if (!isProfileComplete(profile)) {
-    router.navigate(['/onboarding']);
-    return false;
-  }
-
-  return true;
-
-  // Check role === 'pro' in the public.profiles row
-  // const { data } = await sb.checkRole(session.user.id);
-  /* ENABLE THIS WHEN PRO PLAN IS READY
-  if (data?.plan !== 'pro' && data?.plan !== 'elite') {
-    return router.parseUrl('/upgrade');
-  } */
 };
-
-function isProfileComplete(p: any): boolean {
-  return (
-    !!p.display_name &&
-    Array.isArray(p.specialties) &&
-    p.specialties.length > 0
-  );
-}

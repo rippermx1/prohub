@@ -23,11 +23,13 @@ export class LoginComponent {
 
   // Check if already authenticated on component init
   ngOnInit() {
-    this.loading = this.auth.isLoading();
-    if (!this.loading && this.auth.isAuthenticated()) {
-      // If user is authenticated, redirect to dashboard
-      this.router.navigate(['/dashboard']);
-    }
+    this.auth.isLoading$.subscribe(loading => {
+      this.loading = loading;
+      if (!this.loading && this.auth.isAuthenticated()) {
+        // If user is authenticated, redirect to dashboard
+        this.router.navigate(['/dashboard']);
+      }
+    });
   }
 
   loginGoogle() {

@@ -1,15 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { BehaviorSubject, Observable, Subject, combineLatest, map, takeUntil } from 'rxjs';
 import { CardComponent } from '../../components/card/card.component';
 
 import { FilterSheetComponent } from '../../components/filter-sheet/filter-sheet.component';
 import { FilterResult } from '../../interfaces/filter-result.interface';
 import { Professional } from '../../interfaces/professional.interface';
 import { ProfessionalsService } from '../../services/professionals.service';
-import { AuthService } from '../../services/auth.service';
-import { Router } from '@angular/router';
+import { AuthService, UserState } from '../../services/auth.service';
 
 @Component({
   selector: 'app-home',
@@ -24,72 +24,117 @@ import { Router } from '@angular/router';
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   professionalService = inject(ProfessionalsService);
   authService = inject(AuthService);
   router = inject(Router);
   
-  private pros = signal<Professional[]>([]);
+  // Stream management
+  private destroy$ = new Subject<void>();
+  
+  // State as BehaviorSubjects (private)
+  private professionalsSubject = new BehaviorSubject<Professional[]>([]);
+  private loadingSubject = new BehaviorSubject<boolean>(true);
+  private activeFiltersSubject = new BehaviorSubject<FilterResult | null>(null);
+  
+  // Public observables for template
+  loading$ = this.loadingSubject.asObservable();
+  isProfessional$ = this.authService.isAuthenticated$;
+  
+  // Filtered professionals based on active filters
+  filtered$ = combineLatest([
+    this.professionalsSubject,
+    this.activeFiltersSubject,
+    this.loadingSubject
+  ]).pipe(
+    map(([professionals, filters, loading]) => {
+      if (loading) return [];
+      if (!filters) return professionals;
+      
+      return professionals.filter(p => {
+        const cityOk = !filters.city || 
+          p.city?.toLowerCase().includes(filters.city.toLowerCase());
+        
+        const specOk = !filters.specialties.length ||
+          filters.specialties.some(s => p.specialties?.includes(s));
+        
+        const expOk = !filters.experience || 
+          this.matchesExperienceFilter(p, filters.experience);
+        
+        return cityOk && specOk && expOk;
+      });
+    })
+  );
+  
+  // Helper observables for the UI
+  hasActiveFilters$ = this.activeFiltersSubject.pipe(
+    map(filters => !!filters && (
+      !!filters.city || 
+      (filters.specialties && filters.specialties.length > 0) || 
+      !!filters.experience
+    ))
+  );
+  
+  activeFilterCount$ = this.activeFiltersSubject.pipe(
+    map(filters => {
+      if (!filters) return 0;
+      
+      let count = 0;
+      if (filters.city) count++;
+      if (filters.specialties && filters.specialties.length > 0) count++;
+      if (filters.experience) count++;
+      return count;
+    })
+  );
+  
+  // UI state (not converted to observable since it's a local UI state)
   sheetOpen = false;
-  loading = signal<boolean>(true);
-  private activeFilters = signal<FilterResult | null>(null);
-  isProfessional = signal<boolean>(false);
   
   constructor() {}
   
   ngOnInit(): void {
-    this.fetchProfessionals();
     this.checkUserStatus();
+    this.fetchProfessionals();
+  }
+  
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
-  private async checkUserStatus(): Promise<void> {
-    // Only check if session exists to determine if user is a professional
-    this.isProfessional.set(this.authService.isAuthenticated());
+  private checkUserStatus(): void {
+    // User state is now handled by the AuthService
+    this.authService.userState$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(state => {
+        // Just subscribe to ensure state is updated
+        console.log('Current user state:', state);
+      });
   }
 
   navigateToProfile(): void {
     this.router.navigate(['/profile']);
   }
 
-  async fetchProfessionals(): Promise<void> {
-    this.loading.set(true);
-    try {
-      const professionals = await this.professionalService.fetch();
-      
-      // If data returned, use it; otherwise, fall back to demo data
-      if (professionals && professionals.length > 0) {
-        this.pros.set(professionals);
-      } else {
-        this.pros.set([]);
-      }
-    } catch (error) {
-      console.error('Error fetching professionals:', error);
-      // Fall back to demo data if fetch fails
-      this.pros.set([]);
-    } finally {
-      this.loading.set(false);
-    }
-  }
-
-  filtered() {
-    // If still loading, return empty array to prevent errors
-    if (this.loading()) return [];
+  fetchProfessionals(): void {
+    this.loadingSubject.next(true);
     
-    const data = this.activeFilters();
-    if (!data) return this.pros();
-    
-    return this.pros().filter((p) => {
-      const cityOk =
-        !data.city || p.city?.toLowerCase().includes(data.city.toLowerCase());
-      const specOk =
-        !data.specialties.length ||
-        data.specialties.some((s) => p.specialties?.includes(s));
-        
-      // Add experience filtering
-      const expOk = !data.experience || this.matchesExperienceFilter(p, data.experience);
-        
-      return cityOk && specOk && expOk;
-    });
+    // Using promise-based API with Rx
+    this.professionalService.fetch()
+      .then(professionals => {
+        if (professionals && professionals.length > 0) {
+          this.professionalsSubject.next(professionals);
+        } else {
+          this.professionalsSubject.next([]);
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching professionals:', error);
+        this.professionalsSubject.next([]);
+      })
+      .finally(() => {
+        this.loadingSubject.next(false);
+      });
   }
   
   private matchesExperienceFilter(
@@ -118,34 +163,14 @@ export class HomeComponent implements OnInit {
     return minOk && maxOk;
   }
 
-  hasActiveFilters(): boolean {
-    const filters = this.activeFilters();
-    return !!filters && (
-      !!filters.city || 
-      filters.specialties.length > 0 || 
-      !!filters.experience
-    );
-  }
-
-  activeFilterCount(): number {
-    const filters = this.activeFilters();
-    if (!filters) return 0;
-
-    let count = 0;
-    if (filters.city) count++;
-    if (filters.specialties && filters.specialties.length > 0) count++;
-    if (filters.experience) count++;
-    return count;
-  }
-
   clearFilters(): void {
-    this.activeFilters.set(null);
+    this.activeFiltersSubject.next(null);
   }
 
-  onClosed(res: FilterResult | null) {
+  onClosed(res: FilterResult | null): void {
     this.sheetOpen = false;
     if (res) {
-      this.activeFilters.set(res);
+      this.activeFiltersSubject.next(res);
     }
   }
 }
