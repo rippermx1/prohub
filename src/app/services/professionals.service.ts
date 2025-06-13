@@ -29,8 +29,7 @@ export class ProfessionalsService {
     let query = this.sb.supabase
       .from('profiles')
       .select(
-        `id, display_name, city, bio, specialties, hourly_rate, avatar_url, verified, rating, website, 
-         services (id, name, price)`
+        `id, display_name, city, bio, specialties, hourly_rate, avatar_url, verified, rating, website, phone, services (id, name, price)`
       );
 
     // Dynamic filters
