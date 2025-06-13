@@ -24,7 +24,23 @@ export class SpecialtiesService {
     'Video',
     'Traducción',
     'Redacción',
-    'E-commerce'
+    'E-commerce',
+    'Logística',
+    'Seguridad',
+    'Turismo',
+    'Eventos',
+    'Deportes',
+    'Arte',
+    'Cultura',
+    'Cuidado de mascotas',
+    'Cuidado del hogar',
+    'Alimentación',
+    'Belleza',
+    'Fitness',
+    'Música',
+    'Tecnología',
+    'Ciencia',
+    'Transporte'
   ];
 
   /**

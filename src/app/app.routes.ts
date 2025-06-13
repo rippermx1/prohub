@@ -5,9 +5,19 @@ import { publicOnlyGuard } from './guard/auth.guard';
 export const routes: Routes = [
   {
     path: '',
+    redirectTo: 'landing',
+    pathMatch: 'full'
+  },
+  {
+    path: 'landing',
+    loadComponent: () =>
+      import('./pages/landing/landing.component').then((m) => m.LandingComponent),
+    canActivate: [publicOnlyGuard]
+  },
+  {
+    path: 'home',
     loadComponent: () =>
       import('./pages/home/home.component').then((m) => m.HomeComponent),
-    pathMatch: 'full',
     canActivate: [publicOnlyGuard]
   },
   {
