@@ -7,6 +7,10 @@ import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideServiceWorker } from '@angular/service-worker';
+import {
+  provideNgIconsConfig,
+  withContentSecurityPolicy,
+} from '@ng-icons/core';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -15,9 +19,12 @@ export const appConfig: ApplicationConfig = {
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),
       registrationStrategy: 'registerWhenStable:30000',
-    }), provideServiceWorker('ngsw-worker.js', {
-            enabled: !isDevMode(),
-            registrationStrategy: 'registerWhenStable:30000'
-          }),
+    }),
+    provideNgIconsConfig(
+      {
+        size: '1em',
+      },
+      withContentSecurityPolicy()
+    ),
   ],
 };

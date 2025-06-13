@@ -10,11 +10,10 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { ModalService } from '../../services/modal.service';
-import {
-  ProfessionalsService,
-  ServicePrice,
-} from '../../services/professionals.service';
+import { ServicePrice } from '../../services/professionals.service';
 import { Professional } from '../../interfaces/professional.interface';
+import { provideIcons, NgIcon } from '@ng-icons/core';
+import { heroBriefcase, heroGlobeAlt, heroHeart, heroInformationCircle, heroMapPin, heroPhone } from '@ng-icons/heroicons/outline';
 
 interface RatingBar {
   level: string;
@@ -25,9 +24,19 @@ interface RatingBar {
 @Component({
   selector: 'app-specialist-detail',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, NgIcon],
   templateUrl: './specialist-detail.component.html',
   styleUrl: './specialist-detail.component.scss',
+  providers: [
+    provideIcons({
+      heroMapPin,
+      heroHeart,
+      heroInformationCircle,
+      heroGlobeAlt,
+      heroPhone,
+      heroBriefcase
+    }),
+  ],
 })
 export class SpecialistDetailComponent implements OnInit {
   @Input() professional!: Professional;
