@@ -21,7 +21,7 @@ interface NavItem {
 })
 export class TabbarComponent implements OnInit {
   private allNavItems: NavItem[] = [
-    { path: '', label: 'Inicio', icon: 'home', requiresAuth: false },
+    { path: '/home', label: 'Inicio', icon: 'home', requiresAuth: false },
     // { path: '/search', label: 'Buscar', icon: 'search', requiresAuth: false },
     {
       path: '/dashboard',
@@ -74,8 +74,14 @@ export class TabbarComponent implements OnInit {
     );
   }
   shouldShowTabbar(): boolean {
+    // Don't show on landing page
+    if (this.router.url === '/landing') {
+      console.log('Landing route detected, hiding tabbar');
+      return false;
+    }
+
     // Always show on home component (empty path or root path)
-    if (this.router.url === '/' || this.router.url === '') {
+    if (this.router.url === '/home' || this.router.url === 'home') {
       return false;
     }
 
