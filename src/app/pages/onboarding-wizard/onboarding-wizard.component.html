@@ -1,69 +1,79 @@
-<section class="min-h-screen flex flex-col bg-gray-900 text-gray-100 px-6 py-8">
-      <h1 class="text-2xl font-bold mb-6 text-center">Completa tu perfil</h1>
-      <!-- progress dots -->
-      <div class="flex justify-center gap-2 mb-8">
-        <span *ngFor="let i of [0,1,2]" class="w-3 h-3 rounded-full"
-              [class.bg-indigo-500]="step()===i" [class.bg-gray-600]="step()!==i"></span>
-      </div>
+<section class="min-h-screen flex flex-col bg-gradient-to-b from-blue-900 via-indigo-900 to-gray-900 text-gray-100 px-6 py-8">
+  <h1 class="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">Completa tu perfil</h1>
+  
+  <!-- Enhanced progress dots -->
+  <div class="flex justify-center gap-3 mb-8">
+    <span *ngFor="let i of [0,1,2]" class="w-3 h-3 rounded-full transition-all duration-300 shadow-md"
+          [class.bg-gradient-to-r]="step()===i"
+          [class.from-blue-400]="step()===i"
+          [class.to-indigo-400]="step()===i" 
+          [class.bg-white]="step()!==i"
+          [class.scale-125]="step()===i"></span>
+  </div>
 
-      <!-- Step 1 -->
-      <div *ngIf="step()===0" class="flex-1 flex flex-col gap-4 max-w-md mx-auto w-full">
-        <label class="text-sm flex flex-col gap-1">
-          Nombre / estudio
-          <input [(ngModel)]="displayName" required class="rounded-lg px-3 py-2 bg-gray-800 border-gray-700 focus:ring-indigo-500" />
-        </label>        <label class="text-sm flex flex-col gap-1">
-          Ciudad / comuna
-          <div class="relative">
-            <input 
-              [(ngModel)]="cityQuery" 
-              (input)="searchLocations($event)" 
-              (focus)="showLocationDropdown = true"
-              (blur)="onLocationBlur()"
-              class="w-full rounded-lg px-3 py-2 bg-gray-800 border-gray-700 focus:ring-indigo-500" 
-              placeholder="Buscar ciudad o comuna..."
-            />
-            <div *ngIf="showLocationDropdown && filteredLocations.length > 0" 
-                class="absolute z-10 w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-              <div *ngFor="let location of filteredLocations"
-                  (mousedown)="selectLocation(location)"
-                  class="px-3 py-2 hover:bg-gray-700 cursor-pointer">
-                {{ location.comuna }}, {{ location.region }}
-              </div>
-            </div>
-            <div *ngIf="showLocationDropdown && filteredLocations.length === 0" 
-                class="absolute z-10 w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-lg">
-              <div class="px-3 py-2 text-gray-400">No se encontraron resultados</div>
-            </div>
+  <!-- Enhanced form fields -->
+  <div *ngIf="step()===0" class="flex-1 flex flex-col gap-6 max-w-md mx-auto w-full">
+    <label class="text-sm flex flex-col gap-2">
+      <span class="font-semibold text-blue-200">Nombre / estudio</span>
+      <input [(ngModel)]="displayName" required class="rounded-xl px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 focus:ring-2 focus:ring-blue-400 focus:border-transparent text-white placeholder-blue-200 transition-all" placeholder="Ingresa tu nombre o nombre del estudio" />
+    </label>
+    
+    <!-- Enhanced location search -->
+    <label class="text-sm flex flex-col gap-2">
+      <span class="font-semibold text-blue-200">Ciudad / comuna</span>
+      <div class="relative">
+        <input 
+          [(ngModel)]="cityQuery" 
+          (input)="searchLocations($event)" 
+          (focus)="showLocationDropdown = true"
+          (blur)="onLocationBlur()"
+          class="w-full rounded-xl px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 focus:ring-2 focus:ring-blue-400 focus:border-transparent text-white placeholder-blue-200 transition-all" 
+          placeholder="Buscar ciudad o comuna..."
+        />
+        <div *ngIf="showLocationDropdown && filteredLocations.length > 0" 
+            class="absolute z-10 w-full mt-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-xl max-h-60 overflow-y-auto">
+          <div *ngFor="let location of filteredLocations"
+              (mousedown)="selectLocation(location)"
+              class="px-4 py-3 hover:bg-gray-700 cursor-pointer transition-colors border-b border-gray-700 last:border-b-0">
+            <div class="text-white font-medium">{{ location.comuna }}</div>
+            <div class="text-gray-400 text-sm">{{ location.region }}</div>
           </div>
-        </label>
-      </div>      <!-- Step 2 -->
-      <div *ngIf="step()===1" class="flex-1 flex flex-col gap-4 max-w-md mx-auto w-full">
-        <p class="text-sm text-gray-400">Selecciona tu especialidad principal</p>
-        <p class="text-xs text-gray-500 mb-2">Elige la categoría que mejor represente tus servicios profesionales</p>        <div class="flex flex-wrap gap-2">
-          <button *ngFor="let opt of allSpecialties" (click)="toggle(opt)"
-                  [class]="chip(opt)">
-            <span class="inline-block w-4 h-4 rounded-full border border-gray-500 flex-shrink-0"
-                  [class.bg-white]="selectedSpecialty === opt"></span>
-            {{ opt }}
-          </button>
+        </div>
+        <div *ngIf="showLocationDropdown && filteredLocations.length === 0" 
+            class="absolute z-10 w-full mt-2 bg-gray-800 border border-gray-700 rounded-lg shadow-xl">
+          <div class="px-4 py-3 text-gray-400 text-center">No se encontraron resultados</div>
         </div>
       </div>
+    </label>
+  </div>
 
-      <!-- Step 3 -->
-      <div *ngIf="step()===2" class="flex-1 flex flex-col items-center gap-6 max-w-md mx-auto w-full">
-        <img [src]="previewUrl || 'https://placehold.co/128x128?text=Avatar'" class="w-32 h-32 rounded-full object-cover" />
-        <input type="file" accept="image/*" (change)="onFile($event)" />
-      </div>      <!-- nav -->
-      <div class="mt-8 flex justify-between max-w-md mx-auto w-full">
-        <button *ngIf="step()>0" (click)="back()" class="px-4 py-2 text-sm bg-gray-700 rounded-lg" [disabled]="loading()">Atrás</button>
-        <button (click)="next()" [disabled]="disabled() || loading()" class="ml-auto px-6 py-2 bg-indigo-600 rounded-lg disabled:opacity-40 relative">
-          <span *ngIf="loading()" class="absolute inset-0 flex items-center justify-center">
-            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-          </span>
-          <span [class.invisible]="loading()">{{ step()===2 ? 'Guardar' : 'Siguiente' }}</span>
-        </button>
-      </div>
-    </section>
+  <!-- Enhanced specialty selection -->
+  <div *ngIf="step()===1" class="flex-1 flex flex-col gap-4 max-w-md mx-auto w-full">
+    <p class="text-sm text-blue-200 font-medium">Selecciona tu especialidad principal</p>
+    <p class="text-xs text-blue-300 mb-2">Elige la categoría que mejor represente tus servicios profesionales</p>
+    <div class="flex flex-wrap gap-2">
+      <button *ngFor="let opt of allSpecialties" (click)="toggle(opt)"
+              [class]="chip(opt) + ' backdrop-blur-sm'">
+        <span class="inline-block w-4 h-4 rounded-full border border-gray-500 flex-shrink-0"
+              [class.bg-white]="selectedSpecialty === opt"></span>
+        {{ opt }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Enhanced navigation -->
+  <div class="mt-8 flex justify-between max-w-md mx-auto w-full gap-4">
+    <button *ngIf="step()>0" (click)="back()" class="px-6 py-3 text-sm bg-white/10 hover:bg-white/20 rounded-xl font-medium transition-all backdrop-blur-sm border border-white/20" [disabled]="loading()">
+      Atrás
+    </button>
+    <button (click)="next()" [disabled]="disabled() || loading()" class="ml-auto px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-600 disabled:to-gray-600 disabled:cursor-not-allowed rounded-xl font-semibold transition-all relative min-w-[120px] shadow-lg hover:shadow-xl transform hover:scale-105">
+      <span *ngIf="loading()" class="absolute inset-0 flex items-center justify-center">
+        <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </span>
+      <span [class.invisible]="loading()">{{ step()===2 ? 'Guardar' : 'Siguiente' }}</span>
+    </button>
+  </div>
+</section>

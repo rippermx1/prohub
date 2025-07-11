@@ -1,24 +1,299 @@
-/* You can add global styles to this file, and also import other style files */
+/* ProHub Design System - Global Styles */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Add smooth transition for dark mode */
+/* Import fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap');
+
+/* Root variables for consistent theming */
 :root {
   color-scheme: light dark;
+  
+  /* Brand colors */
+  --color-brand-primary: theme('colors.primary.600');
+  --color-brand-secondary: theme('colors.secondary.600');
+  --color-brand-accent: theme('colors.accent.600');
+  
+  /* Spacing scale */
+  --spacing-xs: theme('spacing.1');
+  --spacing-sm: theme('spacing.2');
+  --spacing-md: theme('spacing.4');
+  --spacing-lg: theme('spacing.6');
+  --spacing-xl: theme('spacing.8');
+  
+  /* Border radius scale */
+  --radius-sm: theme('borderRadius.md');
+  --radius-md: theme('borderRadius.lg');
+  --radius-lg: theme('borderRadius.xl');
+  
+  /* Shadow scale */
+  --shadow-sm: theme('boxShadow.sm');
+  --shadow-md: theme('boxShadow.md');
+  --shadow-lg: theme('boxShadow.lg');
+}
+
+/* Dark mode variables */
+.dark {
+  --color-brand-primary: theme('colors.primary.500');
+  --color-brand-secondary: theme('colors.secondary.400');
+  --color-brand-accent: theme('colors.accent.500');
+}
+
+/* Base styles */
+* {
+  @apply border-secondary-200 dark:border-secondary-700;
+}
+
+html {
+  @apply scroll-smooth;
+  /* Improve text rendering on mobile */
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
 }
 
 body {
-  @apply bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100;
+  @apply bg-secondary-50 dark:bg-secondary-900 text-secondary-900 dark:text-secondary-100 font-sans antialiased;
   transition: background-color 0.3s ease, color 0.3s ease;
+  /* Improve mobile scrolling */
+  -webkit-overflow-scrolling: touch;
+  /* Prevent horizontal scroll on mobile */
+  overflow-x: hidden;
 }
 
-/* Add animation for modal */
+/* Focus styles */
+*:focus {
+  @apply outline-none;
+}
+
+*:focus-visible {
+  @apply ring-2 ring-primary-500 ring-offset-2 dark:ring-offset-secondary-900;
+}
+
+/* Selection styles */
+::selection {
+  @apply bg-primary-100 text-primary-900;
+}
+
+.dark ::selection {
+  @apply bg-primary-800 text-primary-100;
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  @apply w-1 sm:w-2;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-secondary-100 dark:bg-secondary-800;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-secondary-300 dark:bg-secondary-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-secondary-400 dark:bg-secondary-500;
+}
+
+/* Animation utilities */
 @keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
+  from { 
+    opacity: 0; 
+    transform: translateY(10px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
 }
 
+@keyframes slideIn {
+  from { 
+    opacity: 0; 
+    transform: translateX(-20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+@keyframes scaleIn {
+  from { 
+    opacity: 0; 
+    transform: scale(0.95); 
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1); 
+  }
+}
+
+/* Component-specific animations */
 .animate-fadeIn {
-  animation: fadeIn 0.2s ease-out forwards;
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-slideIn {
+  animation: slideIn 0.3s ease-out forwards;
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.2s ease-out forwards;
+}
+
+/* Loading states */
+.loading-skeleton {
+  @apply bg-secondary-200 dark:bg-secondary-700 animate-pulse rounded;
+}
+
+.loading-shimmer {
+  @apply relative overflow-hidden bg-secondary-200 dark:bg-secondary-700;
+}
+
+.loading-shimmer::after {
+  content: '';
+  @apply absolute inset-0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  transform: translateX(-100%);
+  animation: shimmer 1.5s infinite;
+}
+
+.dark .loading-shimmer::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Utility classes for consistent spacing */
+.stack-xs > * + * {
+  @apply mt-1 sm:mt-2;
+}
+
+.stack-sm > * + * {
+  @apply mt-2 sm:mt-3;
+}
+
+.stack-md > * + * {
+  @apply mt-3 sm:mt-4 lg:mt-6;
+}
+
+.stack-lg > * + * {
+  @apply mt-4 sm:mt-6 lg:mt-8;
+}
+
+.cluster-xs {
+  @apply flex flex-wrap gap-1 sm:gap-2;
+}
+
+.cluster-sm {
+  @apply flex flex-wrap gap-2 sm:gap-3;
+}
+
+.cluster-md {
+  @apply flex flex-wrap gap-3 sm:gap-4 lg:gap-6;
+}
+
+.cluster-lg {
+  @apply flex flex-wrap gap-4 sm:gap-6 lg:gap-8;
+}
+
+/* Responsive grid utilities */
+.grid-responsive {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
+}
+
+.grid-responsive-cards {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6;
+}
+
+/* Mobile touch improvements */
+@media (hover: none) and (pointer: coarse) {
+  .hover\:scale-105:hover {
+    transform: none;
+  }
+  
+  .hover\:-translate-y-1:hover {
+    transform: none;
+  }
+  
+  /* Increase touch targets on mobile */
+  button, [role="button"], a {
+    @apply min-h-[44px] min-w-[44px];
+  }
+}
+
+/* Enhanced responsive breakpoint utilities */
+@media (max-width: 640px) {
+  .mobile-stack {
+    @apply flex flex-col gap-3;
+  }
+  
+  .mobile-full-width {
+    @apply w-full;
+  }
+  
+  .mobile-text-center {
+    @apply text-center;
+  }
+}
+
+@media (min-width: 768px) {
+  .desktop-inline {
+    @apply inline-flex;
+  }
+  
+  .desktop-grid {
+    @apply grid;
+  }
+}
+
+/* Print styles */
+@media print {
+  * {
+    @apply text-black bg-white;
+  }
+  
+  .no-print {
+    @apply hidden;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  * {
+    @apply border-black dark:border-white;
+  }
+  
+  .btn-primary {
+    @apply bg-black text-white border-black;
+  }
+  
+  .dark .btn-primary {
+    @apply bg-white text-black border-white;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

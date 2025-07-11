@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { BehaviorSubject, Observable, Subject, combineLatest, map, takeUntil } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, combineLatest, map, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
 import { CardComponent } from '../../components/card/card.component';
 
 import { FilterSheetComponent } from '../../components/filter-sheet/filter-sheet.component';
@@ -41,55 +41,92 @@ export class HomeComponent implements OnInit, OnDestroy {
   loading$ = this.loadingSubject.asObservable();
   isProfessional$ = this.authService.isAuthenticated$;
   
-  // Filtered professionals based on active filters
+  // Add search functionality
+  private searchTermSubject = new BehaviorSubject<string>('');
+  searchTerm$ = this.searchTermSubject.asObservable().pipe(
+    debounceTime(300),
+    distinctUntilChanged()
+  );
+  
+  // Enhanced filtered professionals with search
   filtered$ = combineLatest([
     this.professionalsSubject,
     this.activeFiltersSubject,
+    this.searchTerm$,
     this.loadingSubject
   ]).pipe(
-    map(([professionals, filters, loading]) => {
+    map(([professionals, filters, searchTerm, loading]) => {
       if (loading) return [];
-      if (!filters) return professionals;
       
-      return professionals.filter(p => {
-        const cityOk = !filters.city || 
-          p.city?.toLowerCase().includes(filters.city.toLowerCase());
-        
-        const specOk = !filters.specialties.length ||
-          filters.specialties.some(s => p.specialties?.includes(s));
-        
-        const expOk = !filters.experience || 
-          this.matchesExperienceFilter(p, filters.experience);
-        
-        return cityOk && specOk && expOk;
-      });
+      let result = professionals;
+      
+      // Apply search filter
+      if (searchTerm.trim()) {
+        const search = searchTerm.toLowerCase().trim();
+        result = result.filter(p => 
+          p.display_name?.toLowerCase().includes(search) ||
+          p.city?.toLowerCase().includes(search) ||
+          p.specialties?.some(s => s.toLowerCase().includes(search)) ||
+          p.bio?.toLowerCase().includes(search)
+        );
+      }
+      
+      // Apply other filters
+      if (filters) {
+        result = result.filter(p => {
+          const cityOk = !filters.city || 
+            p.city?.toLowerCase().includes(filters.city.toLowerCase());
+          
+          const specOk = !filters.specialties.length ||
+            filters.specialties.some(s => p.specialties?.includes(s));
+          
+          const expOk = !filters.experience || 
+            this.matchesExperienceFilter(p, filters.experience);
+          
+          return cityOk && specOk && expOk;
+        });
+      }
+      
+      return result;
     })
   );
-  
-  // Helper observables for the UI
-  hasActiveFilters$ = this.activeFiltersSubject.pipe(
-    map(filters => !!filters && (
-      !!filters.city || 
-      (filters.specialties && filters.specialties.length > 0) || 
-      !!filters.experience
-    ))
+
+  // Enhanced filter state tracking
+  hasActiveFilters$ = combineLatest([
+    this.activeFiltersSubject,
+    this.searchTerm$
+  ]).pipe(
+    map(([filters, searchTerm]) => 
+      !!searchTerm.trim() || 
+      (!!filters && (
+        !!filters.city || 
+        (filters.specialties && filters.specialties.length > 0) || 
+        !!filters.experience
+      ))
+    )
   );
   
-  activeFilterCount$ = this.activeFiltersSubject.pipe(
-    map(filters => {
-      if (!filters) return 0;
-      
+  activeFilterCount$ = combineLatest([
+    this.activeFiltersSubject,
+    this.searchTerm$
+  ]).pipe(
+    map(([filters, searchTerm]) => {
       let count = 0;
-      if (filters.city) count++;
-      if (filters.specialties && filters.specialties.length > 0) count++;
-      if (filters.experience) count++;
+      if (searchTerm.trim()) count++;
+      if (filters) {
+        if (filters.city) count++;
+        if (filters.specialties && filters.specialties.length > 0) count++;
+        if (filters.experience) count++;
+      }
       return count;
     })
   );
-  
+
   // UI state (not converted to observable since it's a local UI state)
   sheetOpen = false;
-  
+  searchValue = '';
+  showSearchBar = false;
+
   constructor() {}
   
   ngOnInit(): void {
@@ -163,8 +200,26 @@ export class HomeComponent implements OnInit, OnDestroy {
     return minOk && maxOk;
   }
 
-  clearFilters(): void {
+  onSearchInput(value: string): void {
+    this.searchValue = value;
+    this.searchTermSubject.next(value);
+  }
+
+  toggleSearch(): void {
+    this.showSearchBar = !this.showSearchBar;
+    if (!this.showSearchBar) {
+      this.clearSearch();
+    }
+  }
+
+  clearSearch(): void {
+    this.searchValue = '';
+    this.searchTermSubject.next('');
+  }
+
+  clearAllFilters(): void {
     this.activeFiltersSubject.next(null);
+    this.clearSearch();
   }
 
   onClosed(res: FilterResult | null): void {
@@ -172,5 +227,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (res) {
       this.activeFiltersSubject.next(res);
     }
+  }
+
+  trackByProfessional(index: number, professional: Professional): string {
+    return professional.id;
   }
 }

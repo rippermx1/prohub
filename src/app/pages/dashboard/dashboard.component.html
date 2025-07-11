@@ -1,27 +1,33 @@
-<section class="p-4 lg:p-6 space-y-6">
-  <!-- Dashboard Header -->  <div class="flex items-center justify-between">
-    <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Panel profesional</h1>
-    <div class="flex items-center gap-3">      <span class="px-3 py-1.5 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 text-sm font-medium rounded-full">
-        <span class="hidden sm:inline">Profesional</span> Verificado      </span>
+<section class="p-4 lg:p-6 space-y-6 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 min-h-screen">
+  <!-- Enhanced Dashboard Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-700 to-indigo-700 dark:from-blue-300 dark:to-indigo-300 bg-clip-text text-transparent">Panel profesional</h1>
+      <p class="text-blue-600 dark:text-blue-400 text-sm font-medium mt-1">Gestiona tu perfil y leads</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="px-3 py-1.5 bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-blue-900/40 dark:to-indigo-900/40 text-blue-700 dark:text-blue-300 text-sm font-semibold rounded-full shadow-md">
+        <span class="hidden sm:inline">Profesional</span> Verificado
+      </span>
       <!-- Enhanced Logout Button Component -->
       <app-logout-button 
         variant="icon" 
-        customClass="hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400"
+        customClass="hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 shadow-md"
         confirmMessage="¿Estás seguro que deseas cerrar sesión de ProHub?"
       ></app-logout-button>
     </div>
   </div>
 
-  <!-- Key Metrics - Simplified -->
+  <!-- Enhanced Key Metrics with gradients -->
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-    <!-- Leads Card -->
-    <div class="rounded-xl bg-white dark:bg-gray-800 p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+    <!-- Enhanced Leads Card -->
+    <div class="rounded-xl bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-gray-700 p-5 shadow-lg border border-blue-100 dark:border-gray-600 hover:shadow-xl transition-all duration-300">
       <div class="flex justify-between items-start">
         <div>
-          <p class="text-sm text-gray-500 dark:text-gray-400">Leads recibidos</p>
-          <p class="text-3xl font-semibold text-gray-800 dark:text-gray-100 mt-1">{{ leads() }}</p>
+          <p class="text-sm text-blue-600 dark:text-blue-400 font-medium">Leads recibidos</p>
+          <p class="text-3xl font-bold bg-gradient-to-r from-blue-700 to-indigo-700 dark:from-blue-300 dark:to-indigo-300 bg-clip-text text-transparent mt-1">{{ leads() }}</p>
         </div>
-        <div class="p-2 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400">
+        <div class="p-2 rounded-xl bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-blue-900/40 dark:to-indigo-900/40 text-blue-600 dark:text-blue-400 shadow-md">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
             <circle cx="9" cy="7" r="4"></circle>
@@ -42,8 +48,8 @@
       </div>
     </div>
 
-    <!-- Rating Card -->
-    <div class="rounded-xl bg-white dark:bg-gray-800 p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+    <!-- Enhanced Rating Card -->
+    <div class="rounded-xl bg-gradient-to-br from-white to-amber-50 dark:from-gray-800 dark:to-gray-700 p-5 shadow-lg border border-amber-100 dark:border-gray-600 hover:shadow-xl transition-all duration-300">
       <div class="flex justify-between items-start">
         <div>
           <p class="text-sm text-gray-500 dark:text-gray-400">Valoración promedio</p>
@@ -69,11 +75,11 @@
     </div>
   </div>
 
-  <!-- Recent Leads Section - Simplified and Focused -->
-  <div class="rounded-xl bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-    <div class="p-4 border-b border-gray-100 dark:border-gray-700">
-      <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Leads recientes</h2>
-      <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Consultas de potenciales clientes</p>
+  <!-- Enhanced Recent Leads Section -->
+  <div class="rounded-xl bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-gray-700 shadow-lg border border-blue-100 dark:border-gray-600 overflow-hidden">
+    <div class="p-4 border-b border-blue-100 dark:border-gray-600 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-750">
+      <h2 class="text-lg font-bold bg-gradient-to-r from-blue-700 to-indigo-700 dark:from-blue-300 dark:to-indigo-300 bg-clip-text text-transparent">Leads recientes</h2>
+      <p class="text-sm text-blue-600 dark:text-blue-400 mt-1 font-medium">Consultas de potenciales clientes</p>
     </div>
     
     <!-- Empty state when no leads -->
@@ -111,9 +117,9 @@
     </div>
   </div>
 
-  <!-- Quick Tips - Helpful advice for specialists -->
-  <div class="rounded-xl bg-gradient-to-r from-indigo-500/10 to-indigo-600/10 dark:from-indigo-900/30 dark:to-indigo-800/30 p-5 border border-indigo-100 dark:border-indigo-800/40">
-    <h3 class="text-md font-semibold text-indigo-700 dark:text-indigo-300 mb-2 flex items-center">
+  <!-- Enhanced Quick Tips -->
+  <div class="rounded-xl bg-gradient-to-r from-blue-500/10 to-indigo-600/10 dark:from-blue-900/30 dark:to-indigo-800/30 p-5 border border-blue-200 dark:border-blue-800/40 shadow-lg">
+    <h3 class="text-md font-bold text-blue-700 dark:text-blue-300 mb-2 flex items-center">
       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
         <circle cx="12" cy="12" r="10"></circle>
         <path d="M12 16v-4"></path>
@@ -121,7 +127,7 @@
       </svg>
       Consejo para mejorar tu perfil
     </h3>
-    <p class="text-sm text-gray-700 dark:text-gray-300">
+    <p class="text-sm text-blue-700 dark:text-blue-300 font-medium">
       Responde rápidamente a los leads para aumentar tus posibilidades de conversión. Los clientes valoran una comunicación clara y oportuna.
     </p>
   </div>

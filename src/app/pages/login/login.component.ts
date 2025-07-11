@@ -55,4 +55,8 @@ export class LoginComponent {
   logout() {
     this.auth.signOut();
   }
+
+  goToLanding() {
+    this.router.navigate(['/landing']);
+  }
 }
