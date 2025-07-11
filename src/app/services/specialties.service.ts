@@ -40,7 +40,7 @@ export class SpecialtiesService {
     'Música',
     'Tecnología',
     'Ciencia',
-    'Transporte',
+    'Transporte'
   ];
 
   /**
