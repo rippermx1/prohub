@@ -16,6 +16,22 @@ export class SupabaseService {
     console.log('SUPABASE URL =', environment.supabaseUrl);
   }
 
+  async deleteCustomAvatar(uid: string, avatarUrl?: string) {
+    // 1. Elimina el archivo del bucket, si corresponde
+    if (avatarUrl) {
+      const filename = avatarUrl.split('/').pop();
+      if (filename) {
+      await this.supabase.storage.from('avatars').remove([`${uid}/${filename}`]);
+      }
+    }
+
+    // 2. Pone custom_photo_url = null
+    await this.supabase
+      .from('profiles')
+      .update({ custom_photo_url: null })
+      .eq('id', uid);
+  }
+
   async uploadAvatar(file: File, uid: string) {
     const { error } = await this.supabase.storage
       .from('avatars')
@@ -72,7 +88,7 @@ export class SupabaseService {
       .eq('id', id)
       .maybeSingle();
   }
-  
+
   async checkUserExists(id: string) {
     return await this.supabase
       .from('profiles')
@@ -95,6 +111,8 @@ export class SupabaseService {
       .select('*')
       .eq('user_id', uid)
       .single(); */
-      return await this.supabase.rpc('pro_metrics_single', { p_uid: uid }).single();
+    return await this.supabase
+      .rpc('pro_metrics_single', { p_uid: uid })
+      .single();
   }
 }

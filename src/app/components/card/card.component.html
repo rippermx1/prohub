@@ -1,35 +1,27 @@
 <article
-  class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden flex flex-col min-h-[220px] w-full transition-all duration-300 hover:shadow-xl hover:scale-[1.02] cursor-pointer group"
+  class="relative bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-lg overflow-hidden flex sm:flex-col w-full transition-all duration-500 hover:shadow-2xl hover:scale-[1.02] cursor-pointer group border border-gray-100 dark:border-gray-700 hover:border-indigo-200 dark:hover:border-indigo-700"
   (click)="viewDetails()"
 >
-  <!-- Cover image / avatar with gradient overlay -->
-  <div class="relative h-40 overflow-hidden">
+  <!-- User image - left on mobile, top on desktop -->
+  <div class="relative w-24 sm:w-full sm:h-48 md:h-56 flex-shrink-0 overflow-hidden">
     <img
-      [src]="professional.avatar_url || 'https://placehold.co/400x300?text=No+Image'"
+      [src]="professional.avatar_url || 'https://placehold.co/400x400?text=No+Image'"
       [alt]="professional.display_name + ' avatar'"
-      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
     />
-    <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-40"></div>
+    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-black/10 to-black/20 opacity-40 group-hover:opacity-20 transition-opacity duration-300"></div>
 
-    <!-- Hourly rate if available -->
-    <span
-      *ngIf="professional.hourly_rate"
-      class="absolute bottom-3 left-3 bg-white/90 dark:bg-gray-800/90 text-indigo-700 dark:text-indigo-300 text-sm font-semibold px-3 py-1 rounded-full backdrop-blur-sm shadow-sm"
-    >
-      ${{ professional.hourly_rate.toLocaleString() }}/hr
-    </span>
-
-    <!-- Verification badge -->
+    <!-- Verification badge on image -->
     <div
-      *ngIf="professional.verified"
-      class="absolute top-3 right-3 inline-flex items-center px-2 py-1 rounded-full bg-white/90 dark:bg-gray-800/90 text-xs font-medium shadow-md transition group-hover:scale-105 backdrop-blur-sm"
+      *ngIf="professional.verified || true"
+      class="absolute top-2 right-2 inline-flex items-center p-1 rounded-full bg-white/95 dark:bg-gray-800/95 shadow-lg transition-all duration-300 group-hover:scale-105 backdrop-blur-md border border-white/20"
       title="Profesional verificado"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         fill="#10b981"
-        class="w-4 h-4 mr-1"
+        class="w-3 h-3 sm:w-4 sm:h-4"
       >
         <path
           fill-rule="evenodd"
@@ -37,27 +29,41 @@
           clip-rule="evenodd"
         />
       </svg>
-      <span class="text-gray-800 dark:text-gray-200">Verificado</span>
     </div>
   </div>
 
-  <!-- Card body -->
-  <div class="p-4 flex-1 flex flex-col">
-    <div class="flex justify-between items-start">
+  <!-- Information content - right on mobile, bottom on desktop -->
+  <div class="flex-1 p-3 sm:p-4 flex flex-col min-h-[120px] sm:min-h-auto">
+    <!-- Header with name and rating -->
+    <div class="flex justify-between items-start mb-2">
       <h2
-        class="text-lg font-semibold text-gray-800 dark:text-gray-100 line-clamp-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition"
+        class="text-sm sm:text-base font-bold text-gray-900 dark:text-gray-100 line-clamp-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-300 flex-1 pr-2 flex items-center"
       >
         {{ professional.display_name }}
+        <!-- Add verified icon next to name -->
+        <svg
+          *ngIf="professional.verified"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="#10b981"
+          class="w-3.5 h-3.5 ml-1.5 flex-shrink-0"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M8.603 3.799A4.49 4.49 0 0112 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 013.498 1.307 4.491 4.491 0 011.307 3.497A4.49 4.49 0 0121.75 12a4.49 4.49 0 01-1.549 3.397 4.491 4.491 0 01-1.307 3.497 4.491 4.491 0 01-3.497 1.307A4.49 4.49 0 0112 21.75a4.49 4.49 0 01-3.397-1.549 4.49 4.49 0 01-3.498-1.306 4.491 4.491 0 01-1.307-3.498A4.49 4.49 0 012.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 011.307-3.497 4.49 4.49 0 013.497-1.307zm7.007 6.387a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z"
+            clip-rule="evenodd"
+          />
+        </svg>
       </h2>
 
-      <!-- Rating display if available -->
-      <div class="flex items-center" *ngIf="professional.rating && professional.rating > 0">
-        <div class="flex items-center text-amber-500 dark:text-amber-400">
+      <!-- Rating display -->
+      <div class="flex items-center flex-shrink-0" *ngIf="professional.rating && professional.rating > 0">
+        <div class="flex items-center text-amber-500 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2 py-0.5 rounded-full">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="currentColor"
-            class="w-5 h-5"
+            class="w-3 h-3"
           >
             <path
               fill-rule="evenodd"
@@ -65,41 +71,64 @@
               clip-rule="evenodd"
             />
           </svg>
-          <span class="ml-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+          <span class="ml-1 text-xs font-bold text-amber-700 dark:text-amber-300">
             {{ professional.rating.toFixed(1) }}
           </span>
         </div>
       </div>
     </div>
 
-    <!-- Location with icon -->
-    <div
-      *ngIf="professional.city"
-      class="flex items-center mt-1 text-sm text-gray-500 dark:text-gray-400 mb-2 line-clamp-1"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 20 20"
-        fill="currentColor"
-        class="w-4 h-4 mr-1 text-gray-400 dark:text-gray-500"
+    <!-- Location and hourly rate -->
+    <div class="flex flex-wrap items-center gap-2 mb-2">
+      <div
+        *ngIf="professional.city"
+        class="flex items-center text-xs text-gray-500 dark:text-gray-400"
       >
-        <path
-          fill-rule="evenodd"
-          d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 103 9c0 3.492 1.698 5.988 3.355 7.584a13.731 13.731 0 002.273 1.765 11.842 11.842 0 00.976.544l.062.029.018.008.006.003zM10 11.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z"
-          clip-rule="evenodd"
-        />
-      </svg>
-      {{ professional.city }}
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          class="w-3 h-3 mr-1 text-gray-400"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 103 9c0 3.492 1.698 5.988 3.355 7.584a13.731 13.731 0 002.273 1.765 11.842 11.842 0 00.976.544l.062.029.018.008.006.003zM10 11.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        <span class="font-medium">{{ professional.city }}</span>
+      </div>
+
+      <span
+        *ngIf="professional.hourly_rate"
+        class="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-xs font-bold px-2 py-1 rounded-full border border-indigo-100 dark:border-indigo-800 group-hover:scale-105 transition-all duration-300"
+      >
+        ${{ professional.hourly_rate.toLocaleString() }}/hr
+      </span>
+
+      <!-- Specialties tags - inline on mobile, separate section on desktop -->
+      <span
+        *ngFor="let tag of professional.specialties | slice:0:1"
+        class="sm:hidden px-2 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 dark:from-indigo-900/50 dark:to-purple-900/50 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-800 transition-all duration-300 group-hover:from-indigo-100 group-hover:to-purple-100 dark:group-hover:from-indigo-800/50 dark:group-hover:to-purple-800/50"
+      >
+        {{ tag }}
+      </span>
+      <span
+        *ngIf="professional.specialties && professional.specialties.length > 1"
+        class="sm:hidden px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400"
+      >
+        +{{ professional.specialties.length - 1 }}
+      </span>
     </div>
-    
-    <!-- Website link if available and showWebsite is true -->
+
+    <!-- Website link -->
     <a
       *ngIf="professional.website && showWebsite"
       [href]="professional.website"
       target="_blank"
       rel="noopener noreferrer"
       (click)="openWebsite($event)"
-      class="mt-1 mb-2 flex items-center text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors font-medium text-sm group-hover:underline"
+      class="mb-2 flex items-center text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors font-medium text-xs group-hover:underline w-fit"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -107,7 +136,7 @@
         viewBox="0 0 24 24"
         stroke-width="1.5"
         stroke="currentColor"
-        class="w-4 h-4 mr-1"
+        class="w-3 h-3 mr-1 flex-shrink-0"
       >
         <path
           stroke-linecap="round"
@@ -115,30 +144,36 @@
           d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"
         />
       </svg>
-      <span class="truncate max-w-[150px]">{{ getWebsiteDisplay(professional.website) }}</span>
+      <span class="truncate max-w-[100px] sm:max-w-[120px]">{{ getWebsiteDisplay(professional.website) }}</span>
     </a>
 
-    <!-- Bio if available -->
+    <!-- Bio -->
     <p
       *ngIf="professional.bio"
-      class="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2"
+      class="text-xs text-gray-600 dark:text-gray-400 mb-2 line-clamp-2 flex-1"
     >
       {{ professional.bio }}
     </p>
 
-    <!-- Tags with better spacing -->
-    <div class="mt-auto flex flex-wrap gap-1.5 mb-3">
+    <!-- Specialties tags - desktop only (hidden on mobile) -->
+    <div class="hidden sm:flex flex-wrap gap-1 mb-3 mt-auto">
       <span
-        *ngFor="let tag of professional.specialties"
-        class="px-2 py-0.5 rounded-full text-xs bg-indigo-50 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-800 transition group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900"
+        *ngFor="let tag of professional.specialties | slice:0:2"
+        class="px-2 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 dark:from-indigo-900/50 dark:to-purple-900/50 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-800 transition-all duration-300 group-hover:from-indigo-100 group-hover:to-purple-100 dark:group-hover:from-indigo-800/50 dark:group-hover:to-purple-800/50"
       >
         {{ tag }}
       </span>
+      <span
+        *ngIf="professional.specialties && professional.specialties.length > 2"
+        class="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400"
+      >
+        +{{ professional.specialties.length - 2 }}
+      </span>
     </div>
 
-    <!-- View button with improved look -->
-    <button class="w-full py-2 px-3 text-sm rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:hover:bg-indigo-800 dark:text-indigo-300 font-medium transition-colors duration-300 border border-indigo-100 dark:border-indigo-800 group-hover:bg-indigo-600 group-hover:text-white dark:group-hover:bg-indigo-600 dark:group-hover:text-white group-hover:border-transparent">
-      Ver perfil
+    <!-- Profile button - only visible on desktop (sm and above) -->
+    <button class="hidden sm:block w-full py-2 px-3 text-xs sm:text-sm font-semibold rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md hover:shadow-lg transform transition-all duration-300 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1">
+      Ver perfil completo
     </button>
   </div>
 </article>

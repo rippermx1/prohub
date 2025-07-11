@@ -1,219 +1,257 @@
-<section class="min-h-screen bg-gray-900 text-gray-100 px-6 py-8 mb-12 flex flex-col items-center">      <div class="w-full max-w-md flex justify-between items-center mb-6">        <h1 class="text-2xl font-bold">Editar perfil</h1>
-        <!-- Enhanced Logout Button Component -->
-        <app-logout-button 
-          variant="full" 
-          customClass="hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400"
-          confirmMessage="¿Estás seguro que deseas cerrar sesión de ProHub?"
-        ></app-logout-button>
+<section class="min-h-screen bg-gradient-to-b from-blue-900 via-indigo-900 to-gray-900 text-gray-100 px-6 py-8 mb-12 flex flex-col items-center">
+  <div class="w-full max-w-md flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">Editar perfil</h1>
+    <!-- Enhanced Logout Button Component -->
+    <app-logout-button 
+      variant="full" 
+      customClass="hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 bg-white/10 backdrop-blur-sm border border-white/20"
+      confirmMessage="¿Estás seguro que deseas cerrar sesión de ProHub?"
+    ></app-logout-button>
+  </div>
+
+  <!-- Enhanced avatar picker with landing-style design -->
+  <div class="relative mb-6 group">
+    <label class="cursor-pointer relative">
+      <div class="relative">
+        <img [src]="previewUrl || avatarUrl || 'https://placehold.co/128x128?text=Avatar'" class="w-32 h-32 rounded-full object-cover border-4 border-white/20 group-hover:border-blue-400 transition-all duration-300 shadow-xl" />
+        <div class="absolute inset-0 rounded-full bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
       </div>
+      <input type="file" accept="image/*" hidden (change)="onFile($event)">
+      <span class="absolute bottom-0 right-0 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 p-2 rounded-full transition-all duration-300 shadow-lg transform group-hover:scale-110">
+        <svg class="w-5 h-5" fill="none" stroke="white" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+        </svg>
+      </span>
+    </label>
+    
+    <!-- Delete photo button - only show if there's a photo -->
+    <button 
+      *ngIf="previewUrl || avatarUrl"
+      type="button"
+      (click)="deletePhoto()"
+      class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 p-2 rounded-full transition-all duration-300 shadow-lg hover:scale-110 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+      title="Eliminar foto"
+    >
+      <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+      </svg>
+    </button>
+  </div>
 
-      <!-- avatar picker -->
-      <label class="cursor-pointer relative mb-6">
-        <img [src]="previewUrl || avatarUrl || 'https://placehold.co/128x128?text=Avatar'" class="w-32 h-32 rounded-full object-cover" />
-        <input type="file" accept="image/*" hidden (change)="onFile($event)">
-        <span class="absolute bottom-0 right-0 bg-indigo-600 p-1 rounded-full">
-          <svg class="w-4 h-4" fill="none" stroke="white" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
-        </span>
-      </label>
+  <form (ngSubmit)="save()" class="mt-8 flex flex-col gap-4 w-full max-w-md">
+    <!-- Enhanced form fields with landing-style design -->
+    <label class="text-sm flex flex-col gap-2">
+      <span class="font-semibold text-blue-200">Nombre / estudio</span>
+      <input [(ngModel)]="displayName" name="name" required maxlength="60" class="rounded-xl px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 focus:ring-2 focus:ring-blue-400 focus:border-transparent text-white placeholder-blue-200 transition-all" />
+    </label>
+    
+    <!-- Add RUT field -->
+    <label class="text-sm flex flex-col gap-2">
+      <span class="font-medium text-gray-300">RUT</span>
+      <input 
+        [(ngModel)]="rut" 
+        name="rut" 
+        placeholder="Ej: 12.345.678-9" 
+        maxlength="12"
+        class="rounded-lg px-4 py-3 bg-gray-800 border border-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-white placeholder-gray-400 transition-all" 
+      />
+      <small class="text-gray-400">Formato: 12.345.678-9</small>
+    </label>
+    
+    <!-- Add Phone field -->
+    <label class="text-sm flex flex-col gap-2">
+      <span class="font-medium text-gray-300">Teléfono</span>
+      <div class="relative">
+        <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 font-medium">+56</span>
+        <input 
+          [(ngModel)]="phone" 
+          name="phone" 
+          type="tel" 
+          placeholder="9 1234 5678"
+          maxlength="9"
+          class="rounded-lg pl-12 pr-4 py-3 bg-gray-800 border border-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-transparent w-full text-white placeholder-gray-400 transition-all" 
+        />
+      </div>
+      <small class="text-gray-400">Sin espacios ni guiones</small>
+    </label>
+    
+    <label class="text-sm flex flex-col gap-2">
+      <span class="font-medium text-gray-300">Biografía (máx 240 caracteres)</span>
+      <textarea [(ngModel)]="bio" name="bio" rows="3" maxlength="240" class="rounded-lg px-4 py-3 bg-gray-800 border border-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-white placeholder-gray-400 transition-all"></textarea>
+    </label>
+    
+    <label class="text-sm flex flex-col gap-2">
+      <span class="font-medium text-gray-300">Ciudad / comuna</span>
+      <input [(ngModel)]="city" name="city" class="rounded-lg px-4 py-3 bg-gray-800 border border-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-white placeholder-gray-400 transition-all" />
+    </label>
 
-      <form (ngSubmit)="save()" class="mt-8 flex flex-col gap-4 w-full max-w-md">
-        <!-- Basic profile details -->
-        <label class="text-sm flex flex-col gap-1">
-          Nombre / estudio
-          <input [(ngModel)]="displayName" name="name" required maxlength="60" class="rounded-lg px-3 py-2 bg-gray-800 border-gray-700 focus:ring-indigo-500" />
-        </label>
-        
-        <!-- Add RUT field -->
-        <label class="text-sm flex flex-col gap-1">
-          RUT
-          <input 
-            [(ngModel)]="rut" 
-            name="rut" 
-            placeholder="Ej: 12.345.678-9" 
-            maxlength="12"
-            class="rounded-lg px-3 py-2 bg-gray-800 border-gray-700 focus:ring-indigo-500" 
-          />
-          <small class="text-gray-400">Formato: 12.345.678-9</small>
-        </label>
-        
-        <!-- Add Phone field -->
-        <label class="text-sm flex flex-col gap-1">
-          Teléfono
-          <div class="relative">
-            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">+56</span>
-            <input 
-              [(ngModel)]="phone" 
-              name="phone" 
-              type="tel" 
-              placeholder="9 1234 5678"
-              maxlength="9"
-              class="rounded-lg pl-10 pr-3 py-2 bg-gray-800 border-gray-700 focus:ring-indigo-500 w-full" 
-            />
-          </div>
-          <small class="text-gray-400">Sin espacios ni guiones</small>
-        </label>
-        
-        <label class="text-sm flex flex-col gap-1">
-          Biografía (máx 240 caracteres)
-          <textarea [(ngModel)]="bio" name="bio" rows="3" maxlength="240" class="rounded-lg px-3 py-2 bg-gray-800 border-gray-700 focus:ring-indigo-500"></textarea>
-        </label>
-        
-        <label class="text-sm flex flex-col gap-1">
-          Ciudad / comuna
-          <input [(ngModel)]="city" name="city" class="rounded-lg px-3 py-2 bg-gray-800 border-gray-700 focus:ring-indigo-500" />
-        </label>
+    <!-- Hourly rate section -->
+    <label class="text-sm flex flex-col gap-2">
+      <span class="font-medium text-gray-300">Tarifa por hora (CLP)</span>
+      <div class="relative">
+        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">$</span>
+        <input 
+          [(ngModel)]="hourlyRate" 
+          name="hourlyRate" 
+          type="number" 
+          min="0" 
+          placeholder="Ej: 25000"
+          class="rounded-lg pl-8 pr-3 py-3 bg-gray-800 border border-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-transparent w-full text-white placeholder-gray-400 transition-all" 
+        />
+      </div>
+      <small class="text-gray-400 mt-1">Esta tarifa se mostrará en tu perfil público</small>
+    </label>
 
-        <!-- Hourly rate section -->
-        <label class="text-sm flex flex-col gap-1">
-          Tarifa por hora (CLP)
-          <div class="relative">
-            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">$</span>
-            <input 
-              [(ngModel)]="hourlyRate" 
-              name="hourlyRate" 
-              type="number" 
-              min="0" 
-              placeholder="Ej: 25000"
-              class="rounded-lg pl-8 pr-3 py-2 bg-gray-800 border-gray-700 focus:ring-indigo-500 w-full" 
-            />
-          </div>
-          <small class="text-gray-400 mt-1">Esta tarifa se mostrará en tu perfil público</small>
-        </label>
-
-        <!-- Specialties - Enhanced UI -->
-        <div class="text-sm flex flex-col gap-2">
-          <label class="font-medium">Especialidad</label>
-          <div class="relative">
-            <select 
-              [(ngModel)]="selectedSpecialty" 
-              name="specialty"
-              class="appearance-none w-full rounded-lg px-4 py-3 bg-gray-800 border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-            >
-              <option value="" disabled>Selecciona tu especialidad principal</option>
-              <option *ngFor="let specialty of allSpecialties" [value]="specialty">
-                {{ specialty }}
-              </option>
-            </select>
-            <!-- Custom dropdown arrow -->
-            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-              </svg>
-            </div>
-          </div>
-          <p class="text-xs text-gray-400 mt-1">Esta será tu especialidad principal mostrada en tu perfil público</p>
+    <!-- Specialties - Enhanced UI -->
+    <div class="text-sm flex flex-col gap-2">
+      <label class="font-medium">Especialidad</label>
+      <div class="relative">
+        <select 
+          [(ngModel)]="selectedSpecialty" 
+          name="specialty"
+          class="appearance-none w-full rounded-lg px-4 py-3 bg-gray-800 border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+        >
+          <option value="" disabled>Selecciona tu especialidad principal</option>
+          <option *ngFor="let specialty of allSpecialties" [value]="specialty">
+            {{ specialty }}
+          </option>
+        </select>
+        <!-- Custom dropdown arrow -->
+        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
         </div>
+      </div>
+      <p class="text-xs text-gray-400 mt-1">Esta será tu especialidad principal mostrada en tu perfil público</p>
+    </div>
 
-        <!-- Services section -->
-        <div class="mt-4">
-          <h3 class="text-sm text-gray-400 mb-2">Servicios específicos</h3>
-          
-          <!-- Existing services list with edit functionality -->
-          <div *ngFor="let service of services; let i = index" class="mb-2 p-2 bg-gray-800 rounded-lg">
-            <!-- View mode -->
-            <div *ngIf="!service.editing" class="flex items-center gap-2">
-              <div class="flex-1">
-                <p class="text-sm font-medium">{{ service.name }}</p>
-                <p class="text-xs text-gray-400">${{ service.price.toLocaleString('es-CL') }}</p>
-              </div>
-              <button 
-                type="button" 
-                (click)="editService(i)" 
-                class="p-1 text-gray-400 hover:text-blue-400"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                </svg>
-              </button>
-              <button 
-                type="button" 
-                (click)="removeService(i)" 
-                class="p-1 text-gray-400 hover:text-red-400"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                </svg>
-              </button>
-            </div>
-            
-            <!-- Edit mode -->
-            <div *ngIf="service.editing" class="flex flex-col gap-2">
-              <div class="flex gap-2">
-                <input 
-                  [(ngModel)]="service.name" 
-                  [name]="'serviceName' + i" 
-                  class="flex-1 rounded-lg px-3 py-2 bg-gray-700 border-gray-600 focus:ring-indigo-500 text-sm"
-                  placeholder="Nombre del servicio"
-                />
-                <div class="w-1/3 relative">
-                  <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">$</span>
-                  <input 
-                    [(ngModel)]="service.price" 
-                    [name]="'servicePrice' + i" 
-                    type="number" 
-                    min="0" 
-                    class="w-full rounded-lg pl-8 pr-3 py-2 bg-gray-700 border-gray-600 focus:ring-indigo-500 text-sm"
-                    placeholder="Precio"
-                  />
-                </div>
-              </div>
-              <div class="flex justify-end gap-2">
-                <button 
-                  type="button" 
-                  (click)="cancelServiceEdit(i, {id: service.id, name: service.name, price: service.price})" 
-                  class="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded-lg text-xs"
-                >
-                  Cancelar
-                </button>
-                <button 
-                  type="button" 
-                  (click)="saveServiceEdit(i)" 
-                  class="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-xs"
-                >
-                  Guardar
-                </button>
-              </div>
-            </div>
+    <!-- Services section -->
+    <div class="mt-4">
+      <h3 class="text-sm text-gray-400 mb-2">Servicios específicos</h3>
+      
+      <!-- Existing services list with edit functionality -->
+      <div *ngFor="let service of services; let i = index" class="mb-2 p-2 bg-gray-800 rounded-lg">
+        <!-- View mode -->
+        <div *ngIf="!service.editing" class="flex items-center gap-2">
+          <div class="flex-1">
+            <p class="text-sm font-medium">{{ service.name }}</p>
+            <p class="text-xs text-gray-400">${{ service.price.toLocaleString('es-CL') }}</p>
           </div>
-          
-          <!-- Add new service -->
-          <div class="flex gap-2 mt-2">
-            <div class="flex-1">
-              <input 
-                [(ngModel)]="newService.name" 
-                name="newServiceName" 
-                placeholder="Nombre del servicio" 
-                class="w-full rounded-lg px-3 py-2 bg-gray-800 border-gray-700 focus:ring-indigo-500 text-sm"
-              />
-            </div>
+          <button 
+            type="button" 
+            (click)="editService(i)" 
+            class="p-1 text-gray-400 hover:text-blue-400"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+            </svg>
+          </button>
+          <button 
+            type="button" 
+            (click)="removeService(i)" 
+            class="p-1 text-gray-400 hover:text-red-400"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+            </svg>
+          </button>
+        </div>
+        
+        <!-- Edit mode -->
+        <div *ngIf="service.editing" class="flex flex-col gap-2">
+          <div class="flex gap-2">
+            <input 
+              [(ngModel)]="service.name" 
+              [name]="'serviceName' + i" 
+              class="flex-1 rounded-lg px-4 py-3 bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-indigo-500 text-sm"
+              placeholder="Nombre del servicio"
+            />
             <div class="w-1/3 relative">
               <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">$</span>
               <input 
-                [(ngModel)]="newService.price" 
-                name="newServicePrice" 
+                [(ngModel)]="service.price" 
+                [name]="'servicePrice' + i" 
                 type="number" 
                 min="0" 
-                placeholder="Precio" 
-                class="w-full rounded-lg pl-8 pr-3 py-2 bg-gray-800 border-gray-700 focus:ring-indigo-500 text-sm"
+                class="w-full rounded-lg pl-8 pr-3 py-3 bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-indigo-500 text-sm"
+                placeholder="Precio"
               />
             </div>
+          </div>
+          <div class="flex justify-end gap-2">
             <button 
               type="button" 
-              (click)="addService()" 
-              class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-sm flex-shrink-0"
+              (click)="cancelServiceEdit(i, {id: service.id, name: service.name, price: service.price})" 
+              class="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded-lg text-xs"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
-              </svg>
+              Cancelar
+            </button>
+            <button 
+              type="button" 
+              (click)="saveServiceEdit(i)" 
+              class="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-xs"
+            >
+              Guardar
             </button>
           </div>
-          <small class="text-gray-400 mt-1">Agrega servicios específicos con sus precios correspondientes</small>
         </div>
-
-        <!-- Save button -->
-        <button type="submit" [disabled]="saving" class="mt-6 py-3 rounded-xl bg-indigo-600 w-full disabled:opacity-40">
-          {{ saving ? 'Guardando...' : 'Guardar cambios' }}
+      </div>
+      
+      <!-- Add new service -->
+      <div class="flex gap-2 mt-2">
+        <div class="flex-1">
+          <input 
+            [(ngModel)]="newService.name" 
+            name="newServiceName" 
+            placeholder="Nombre del servicio" 
+            class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-gray-700 focus:ring-2 focus:ring-indigo-500 text-sm"
+          />
+        </div>
+        <div class="w-1/3 relative">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">$</span>
+          <input 
+            [(ngModel)]="newService.price" 
+            name="newServicePrice" 
+            type="number" 
+            min="0" 
+            placeholder="Precio" 
+            class="w-full rounded-lg pl-8 pr-3 py-3 bg-gray-800 border border-gray-700 focus:ring-2 focus:ring-indigo-500 text-sm"
+          />
+        </div>
+        <button 
+          type="button" 
+          (click)="addService()" 
+          class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-sm flex-shrink-0"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+          </svg>
         </button>
-        <p *ngIf="saved" class="text-emerald-400 text-center">✅ Guardado</p>
-      </form>
-    </section>
+      </div>
+      <small class="text-gray-400 mt-1">Agrega servicios específicos con sus precios correspondientes</small>
+    </div>
+
+    <!-- Enhanced save button with gradient -->
+    <button type="submit" [disabled]="saving" class="mt-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-600 disabled:to-gray-600 disabled:cursor-not-allowed w-full font-semibold transition-all transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 shadow-lg hover:shadow-xl">
+      <span *ngIf="!saving">Guardar cambios</span>
+      <span *ngIf="saving" class="flex items-center justify-center">
+        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        Guardando...
+      </span>
+    </button>
+    
+    <!-- Enhanced success message -->
+    <div *ngIf="saved" class="text-emerald-300 text-center py-2 bg-gradient-to-r from-emerald-900/20 to-green-900/20 rounded-xl border border-emerald-500/30 backdrop-blur-sm">
+      <div class="flex items-center justify-center">
+        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+        </svg>
+        Perfil guardado exitosamente
+      </div>
+    </div>
+  </form>
+</section>
